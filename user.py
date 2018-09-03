@@ -42,6 +42,7 @@ class User(object):
         # If this is a new user being created for the first time,
         # create a new file for them and save it.
         if new_user:
+            self.set_user_exists(True)
             self.add_days(0)
         else:        # Otherwise, load days from existing file
             self.load_progress_from_file()
