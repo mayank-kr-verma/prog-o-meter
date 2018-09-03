@@ -257,7 +257,7 @@ class StartGUI(object):
         VERTICAL_TEXT_POSITION = 20
         self.canvas = Tk.Canvas(self.root, width = self.CANVAS_WIDTH, height = self.CANVAS_HEIGHT)
         self.canvas.pack()
-        self.canvas.create_text(self.CANVAS_WIDTH/2, VERTICAL_TEXT_POSITION, text = "Hello, welcome to the prog-o-meter!")
+        self.canvas.create_text(self.CANVAS_WIDTH/2, VERTICAL_TEXT_POSITION, text = "Hello, Welcome to the prog-o-meter!")
 
     def input_buttons(self):
         """Display the buttons on the canvas.
@@ -353,6 +353,61 @@ class UsernameGUI(object):
         """Return the username. """
         return self.username
 
+class ErrorGUI(object):
+    """Displays error message in case a given username isn't registered. 
+
+    Displays error message when a user selects 'I already have a meter' but entered username is unregisterd.
+        Attributes:
+        root: a tkinter root.
+    """
+
+    def __init__(self):
+        """Open a Tkinter window to display error message.
+
+        Opens a Tkinter window to display error message.
+        """
+        # Attributes
+        self.root = Tk.Tk()
+        self.root.title("Error!")
+        # Tkinter instantiation
+        self.canvas_layout()
+        self.root.protocol("WM_DELETE_WINDOW", lambda: quit())
+        self.root.mainloop()
+
+    def canvas_layout(self):
+        """Display a Tkinter canvas.
+
+        Creates a 300x50 px canvas with error text.
+
+        Attributes:
+            CANVAS_WIDTH: The width of the canvas is hardcoded to 300 px.
+            CANVAS_HEIGHT: The height of the canvas is hardcoded to 50 px.
+            canvas: The Tkinter canvas widget.
+        """
+        self.CANVAS_WIDTH = 300
+        self.CANVAS_HEIGHT = 50
+        VERTICAL_TEXT_POSITION = 20
+        self.canvas = Tk.Canvas(self.root, width = self.CANVAS_WIDTH, height = self.CANVAS_HEIGHT)
+        self.canvas.pack()
+        self.canvas.create_text(self.CANVAS_WIDTH/2, VERTICAL_TEXT_POSITION, text = "Sorry, The given username is unregisterd")
+        self.input_button()
+
+    def input_button(self):
+        """Display okay button on the canvas.
+
+        Displays Okay button on the canvas. Window closes when user clicks the button.
+
+        Attributes:
+            BTTN_WIDTH: The width of the radiobuttons is hardcoded to 18 text units.
+        """
+        BTTN_WIDTH = 10
+        Tk.Radiobutton(self.root, text = "Okay", command = self.close_window, indicatoron = 0, width = BTTN_WIDTH).pack(pady = 5)
+
+    def close_window(self):
+        """Close the Tkinter window."""
+        self.root.destroy()
+
+
 def update_log_file(_logname, _log_entry):
     """ Updates the file [username]_log.txt, adding user's latest update.
 
@@ -377,11 +432,16 @@ def main():
     Opens a new window, which lets the user type their name.
     Opens a new window, which shows the user's progress, and how many days remains of the challenge.
     """
-    start_screen = StartGUI()
-    user_state = start_screen.get_state()
-    name_screen = UsernameGUI(user_state)
-    username = name_screen.get_name()
-    user = User(username, user_state == 2)
+    while(True):
+        start_screen = StartGUI()
+        user_state = start_screen.get_state()
+        name_screen = UsernameGUI(user_state)
+        username = name_screen.get_name()
+        user = User(username, user_state == 2)
+        if(user.get_user_exists()):
+            break 
+        errorDialog = ErrorGUI()
+    
     logname = "".join((username.lower(), "_log.txt"))
     ProgressGUI(user, logname)
 

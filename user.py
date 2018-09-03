@@ -37,6 +37,7 @@ class User(object):
         self.goal_days = 100
         self.completed_days = 0
         self.part_goals = []
+        self.username_exists = False
 
         # If this is a new user being created for the first time,
         # create a new file for them and save it.
@@ -131,16 +132,39 @@ class User(object):
         """
         return self.completed_days >= self.goal_days
 
+    def set_user_exists(self, val):
+        """Set whether user exists or not
+
+        """
+        self.username_exists = val 
+
+    def get_user_exists(self):
+        """Determines whether user exists or not
+
+        Returns:
+            True if user exists, False if not.
+        """
+        return self.username_exists
+
     def load_progress_from_file(self):
         """Loads saved data from disk into completed_days attribute.
 
         Returns:
             (int) # of completed days
+            (-1) if user is unregistered
         """
         filename = self.get_file_name()
-        days_text = open(filename, "r")
-        self.completed_days = int(days_text.read())
-        days_text.close()
+
+        try:
+            days_text = open(filename, "r")
+        except Exception as e:
+            self.completed_days = 0
+            self.set_user_exists(False)
+        else:
+            self.set_user_exists(True)
+            self.completed_days = int(days_text.read())
+            days_text.close()
+
         return self.completed_days
 
     def get_file_name(self):
