@@ -151,7 +151,6 @@ class User(object):
 
         Returns:
             (int) # of completed days
-            (-1) if user is unregistered
         """
         filename = self.get_file_name()
 
